@@ -32,4 +32,18 @@ describe('AidWave', () => {
     const proposalFromMethod = await appClient.getProposal({});
     expect(proposalFromMethod.return?.valueOf()).toBe(proposal);
   });
+
+  test('vote & getVote', async () => {
+    await appClient.vote({ inFavor: true });
+
+    const votesAfter = await appClient.getVotes({});
+
+    expect(votesAfter.return?.valueOf()).toEqual([BigInt(1), BigInt(1)]);
+
+    await appClient.vote({ inFavor: false });
+
+    const votesAfter2 = await appClient.getVotes({});
+
+    expect(votesAfter2.return?.valueOf()).toEqual([BigInt(1), BigInt(2)]);
+  });
 });
