@@ -1,0 +1,9 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: 2.0.4
+_src_path: gh:algorandfoundation/algokit-fullstack-template
+author_email: elvocool@gmail.com
+author_name: Elvismutinda
+contract_name: AidWave
+preset_name: starter
+project_name: aidWave
+
