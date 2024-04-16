@@ -1,0 +1,39 @@
+{
+  "name": "AidWave",
+  "desc": "",
+  "methods": [
+    {
+      "name": "createApplication",
+      "args": [
+        {
+          "name": "proposal",
+          "type": "string"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "vote",
+      "args": [],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "getProposal",
+      "args": [],
+      "returns": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "getVotes",
+      "args": [],
+      "returns": {
+        "type": "uint64"
+      }
+    }
+  ]
+}
