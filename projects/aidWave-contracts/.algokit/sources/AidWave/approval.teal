@@ -36,7 +36,7 @@ switch *call_NoOp *NOT_IMPLEMENTED *NOT_IMPLEMENTED *NOT_IMPLEMENTED *NOT_IMPLEM
 createApplication:
 	proto 1 0
 
-	// contracts/AidWave.algo.ts:9
+	// contracts/AidWave.algo.ts:13
 	// this.proposal.value = proposal
 	byte 0x70726f706f73616c // "proposal"
 	frame_dig -1 // proposal: string
@@ -47,6 +47,55 @@ createApplication:
 	swap
 	concat
 	app_global_put
+	retsub
+
+// vote(bool)void
+*abi_route_vote:
+	// inFavor: bool
+	txna ApplicationArgs 1
+	dup
+	len
+	int 1
+	==
+	assert
+	int 0
+	getbit
+
+	// execute vote(bool)void
+	callsub vote
+	int 1
+	return
+
+// vote(inFavor: boolean): void
+vote:
+	proto 1 0
+
+	// contracts/AidWave.algo.ts:18
+	// this.voteTotal.value = this.voteTotal.value + 1
+	byte 0x766f7465546f74616c // "voteTotal"
+	dup
+	app_global_get
+	int 1
+	+
+	app_global_put
+
+	// *if0_condition
+	// contracts/AidWave.algo.ts:19
+	// inFavor
+	frame_dig -1 // inFavor: boolean
+	bz *if0_end
+
+	// *if0_consequent
+	// contracts/AidWave.algo.ts:20
+	// this.votesInFavor.value = this.votesInFavor.value + 1
+	byte 0x766f746573496e4661766f72 // "votesInFavor"
+	dup
+	app_global_get
+	int 1
+	+
+	app_global_put
+
+*if0_end:
 	retsub
 
 // getProposal()string
@@ -71,11 +120,38 @@ createApplication:
 getProposal:
 	proto 0 1
 
-	// contracts/AidWave.algo.ts:14
+	// contracts/AidWave.algo.ts:26
 	// return this.proposal.value;
 	byte 0x70726f706f73616c // "proposal"
 	app_global_get
 	extract 2 0
+	retsub
+
+// getVotes()(uint64,uint64)
+*abi_route_getVotes:
+	// The ABI return prefix
+	byte 0x151f7c75
+
+	// execute getVotes()(uint64,uint64)
+	callsub getVotes
+	concat
+	log
+	int 1
+	return
+
+// getVotes(): [uint64, uint64]
+getVotes:
+	proto 0 1
+
+	// contracts/AidWave.algo.ts:31
+	// return [this.votesInFavor.value, this.voteTotal.value];
+	byte 0x766f746573496e4661766f72 // "votesInFavor"
+	app_global_get
+	itob
+	byte 0x766f7465546f74616c // "voteTotal"
+	app_global_get
+	itob
+	concat
 	retsub
 
 *create_NoOp:
@@ -85,7 +161,9 @@ getProposal:
 	err
 
 *call_NoOp:
+	method "vote(bool)void"
 	method "getProposal()string"
+	method "getVotes()(uint64,uint64)"
 	txna ApplicationArgs 0
-	match *abi_route_getProposal
+	match *abi_route_vote *abi_route_getProposal *abi_route_getVotes
 	err
