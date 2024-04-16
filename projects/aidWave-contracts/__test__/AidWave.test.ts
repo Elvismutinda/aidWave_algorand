@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeAll, beforeEach } from '@jest/globals';
 import { algorandFixture } from '@algorandfoundation/algokit-utils/testing';
-import { AidWaveClient } from '../contracts/clients/AidWaveClient';
 import * as algokit from '@algorandfoundation/algokit-utils';
+import { AidWaveClient } from '../contracts/clients/AidWaveClient';
 
 const fixture = algorandFixture();
 algokit.Config.configure({ populateAppCallResources: true });
@@ -10,6 +10,7 @@ let appClient: AidWaveClient;
 
 describe('AidWave', () => {
   beforeEach(fixture.beforeEach);
+  const proposal = 'AidWave is a decentralized platform that connects donors with those in need.';
 
   beforeAll(async () => {
     await fixture.beforeEach();
@@ -24,25 +25,11 @@ describe('AidWave', () => {
       algod
     );
 
-    await appClient.create.createApplication({});
+    await appClient.create.createApplication({ proposal });
   });
 
-  test('sum', async () => {
-    const a = 13;
-    const b = 37;
-    const sum = await appClient.doMath({ a, b, operation: 'sum' });
-    expect(sum.return?.valueOf()).toBe(BigInt(a + b));
-  });
-
-  test('difference', async () => {
-    const a = 13;
-    const b = 37;
-    const diff = await appClient.doMath({ a, b, operation: 'difference' });
-    expect(diff.return?.valueOf()).toBe(BigInt(a >= b ? a - b : b - a));
-  });
-
-  test('hello', async () => {
-    const diff = await appClient.hello({ name: 'world!' });
-    expect(diff.return?.valueOf()).toBe('Hello, world!');
+  test('getProposal', async () => {
+    const proposalFromMethod = await appClient.getProposal({});
+    expect(proposalFromMethod.return?.valueOf()).toBe(proposal);
   });
 });
