@@ -36,7 +36,7 @@ switch *call_NoOp *NOT_IMPLEMENTED *NOT_IMPLEMENTED *NOT_IMPLEMENTED *NOT_IMPLEM
 createApplication:
 	proto 1 0
 
-	// contracts/AidWave.algo.ts:13
+	// contracts/AidWave.algo.ts:15
 	// this.proposal.value = proposal
 	byte 0x70726f706f73616c // "proposal"
 	frame_dig -1 // proposal: string
@@ -47,6 +47,88 @@ createApplication:
 	swap
 	concat
 	app_global_put
+	retsub
+
+// bootstrap()uint64
+*abi_route_bootstrap:
+	// The ABI return prefix
+	byte 0x151f7c75
+
+	// execute bootstrap()uint64
+	callsub bootstrap
+	itob
+	concat
+	log
+	int 1
+	return
+
+// bootstrap(): AssetID
+bootstrap:
+	proto 0 1
+
+	// Push empty bytes after the frame pointer to reserve space for local variables
+	byte 0x
+
+	// contracts/AidWave.algo.ts:20
+	// verifyTxn(this.txn, { sender: this.app.creator })
+	// verify sender
+	txn Sender
+	txna Applications 0
+	app_params_get AppCreator
+	pop
+	==
+	assert
+
+	// contracts/AidWave.algo.ts:21
+	// assert(!this.registeredAsa.exists)
+	txna Applications 0
+	byte 0x72656769737465726564417361 // "registeredAsa"
+	app_global_get_ex
+	swap
+	pop
+	!
+	assert
+
+	// contracts/AidWave.algo.ts:22
+	// registeredAsa = sendAssetCreation({
+	//       configAssetTotal: 1_000,
+	//       configAssetFreeze: this.app.address,
+	//     })
+	itxn_begin
+	int acfg
+	itxn_field TypeEnum
+
+	// contracts/AidWave.algo.ts:23
+	// configAssetTotal: 1_000
+	int 1_000
+	itxn_field ConfigAssetTotal
+
+	// contracts/AidWave.algo.ts:24
+	// configAssetFreeze: this.app.address
+	global CurrentApplicationAddress
+	itxn_field ConfigAssetFreeze
+
+	// Fee field not set, defaulting to 0
+	int 0
+	itxn_field Fee
+
+	// Submit inner transaction
+	itxn_submit
+	itxn CreatedAssetID
+	frame_bury 0 // registeredAsa: uint64
+
+	// contracts/AidWave.algo.ts:27
+	// this.registeredAsa.value = registeredAsa
+	byte 0x72656769737465726564417361 // "registeredAsa"
+	frame_dig 0 // registeredAsa: uint64
+	app_global_put
+
+	// contracts/AidWave.algo.ts:29
+	// return registeredAsa;
+	frame_dig 0 // registeredAsa: uint64
+
+	// set the subroutine return value
+	frame_bury 0
 	retsub
 
 // vote(bool)void
@@ -70,7 +152,7 @@ createApplication:
 vote:
 	proto 1 0
 
-	// contracts/AidWave.algo.ts:18
+	// contracts/AidWave.algo.ts:34
 	// this.voteTotal.value = this.voteTotal.value + 1
 	byte 0x766f7465546f74616c // "voteTotal"
 	dup
@@ -80,13 +162,13 @@ vote:
 	app_global_put
 
 	// *if0_condition
-	// contracts/AidWave.algo.ts:19
+	// contracts/AidWave.algo.ts:35
 	// inFavor
 	frame_dig -1 // inFavor: boolean
 	bz *if0_end
 
 	// *if0_consequent
-	// contracts/AidWave.algo.ts:20
+	// contracts/AidWave.algo.ts:36
 	// this.votesInFavor.value = this.votesInFavor.value + 1
 	byte 0x766f746573496e4661766f72 // "votesInFavor"
 	dup
@@ -120,7 +202,7 @@ vote:
 getProposal:
 	proto 0 1
 
-	// contracts/AidWave.algo.ts:26
+	// contracts/AidWave.algo.ts:42
 	// return this.proposal.value;
 	byte 0x70726f706f73616c // "proposal"
 	app_global_get
@@ -143,7 +225,7 @@ getProposal:
 getVotes:
 	proto 0 1
 
-	// contracts/AidWave.algo.ts:31
+	// contracts/AidWave.algo.ts:47
 	// return [this.votesInFavor.value, this.voteTotal.value];
 	byte 0x766f746573496e4661766f72 // "votesInFavor"
 	app_global_get
@@ -154,6 +236,29 @@ getVotes:
 	concat
 	retsub
 
+// getRegiseredAsa()uint64
+*abi_route_getRegiseredAsa:
+	// The ABI return prefix
+	byte 0x151f7c75
+
+	// execute getRegiseredAsa()uint64
+	callsub getRegiseredAsa
+	itob
+	concat
+	log
+	int 1
+	return
+
+// getRegiseredAsa(): AssetID
+getRegiseredAsa:
+	proto 0 1
+
+	// contracts/AidWave.algo.ts:51
+	// return this.registeredAsa.value;
+	byte 0x72656769737465726564417361 // "registeredAsa"
+	app_global_get
+	retsub
+
 *create_NoOp:
 	method "createApplication(string)void"
 	txna ApplicationArgs 0
@@ -161,9 +266,11 @@ getVotes:
 	err
 
 *call_NoOp:
+	method "bootstrap()uint64"
 	method "vote(bool)void"
 	method "getProposal()string"
 	method "getVotes()(uint64,uint64)"
+	method "getRegiseredAsa()uint64"
 	txna ApplicationArgs 0
-	match *abi_route_vote *abi_route_getProposal *abi_route_getVotes
+	match *abi_route_bootstrap *abi_route_vote *abi_route_getProposal *abi_route_getVotes *abi_route_getRegiseredAsa
 	err
