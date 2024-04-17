@@ -34,6 +34,11 @@ export const APP_SPEC: AppSpec = {
         "no_op": "CREATE"
       }
     },
+    "bootstrap()uint64": {
+      "call_config": {
+        "no_op": "CALL"
+      }
+    },
     "vote(bool)void": {
       "call_config": {
         "no_op": "CALL"
@@ -45,6 +50,11 @@ export const APP_SPEC: AppSpec = {
       }
     },
     "getVotes()(uint64,uint64)": {
+      "call_config": {
+        "no_op": "CALL"
+      }
+    },
+    "getRegiseredAsa()uint64": {
       "call_config": {
         "no_op": "CALL"
       }
@@ -64,6 +74,10 @@ export const APP_SPEC: AppSpec = {
     },
     "global": {
       "declared": {
+        "registeredAsa": {
+          "type": "uint64",
+          "key": "registeredAsa"
+        },
         "proposal": {
           "type": "bytes",
           "key": "proposal"
@@ -83,7 +97,7 @@ export const APP_SPEC: AppSpec = {
   "state": {
     "global": {
       "num_byte_slices": 1,
-      "num_uints": 2
+      "num_uints": 3
     },
     "local": {
       "num_byte_slices": 0,
@@ -91,7 +105,7 @@ export const APP_SPEC: AppSpec = {
     }
   },
   "source": {
-    "approval": "I3ByYWdtYSB2ZXJzaW9uIDEwCgovLyBUaGlzIFRFQUwgd2FzIGdlbmVyYXRlZCBieSBURUFMU2NyaXB0IHYwLjkwLjIKLy8gaHR0cHM6Ly9naXRodWIuY29tL2FsZ29yYW5kZm91bmRhdGlvbi9URUFMU2NyaXB0CgovLyBUaGlzIGNvbnRyYWN0IGlzIGNvbXBsaWFudCB3aXRoIGFuZC9vciBpbXBsZW1lbnRzIHRoZSBmb2xsb3dpbmcgQVJDczogWyBBUkM0IF0KCi8vIFRoZSBmb2xsb3dpbmcgdGVuIGxpbmVzIG9mIFRFQUwgaGFuZGxlIGluaXRpYWwgcHJvZ3JhbSBmbG93Ci8vIFRoaXMgcGF0dGVybiBpcyB1c2VkIHRvIG1ha2UgaXQgZWFzeSBmb3IgYW55b25lIHRvIHBhcnNlIHRoZSBzdGFydCBvZiB0aGUgcHJvZ3JhbSBhbmQgZGV0ZXJtaW5lIGlmIGEgc3BlY2lmaWMgYWN0aW9uIGlzIGFsbG93ZWQKLy8gSGVyZSwgYWN0aW9uIHJlZmVycyB0byB0aGUgT25Db21wbGV0ZSBpbiBjb21iaW5hdGlvbiB3aXRoIHdoZXRoZXIgdGhlIGFwcCBpcyBiZWluZyBjcmVhdGVkIG9yIGNhbGxlZAovLyBFdmVyeSBwb3NzaWJsZSBhY3Rpb24gZm9yIHRoaXMgY29udHJhY3QgaXMgcmVwcmVzZW50ZWQgaW4gdGhlIHN3aXRjaCBzdGF0ZW1lbnQKLy8gSWYgdGhlIGFjdGlvbiBpcyBub3QgaW1wbGVtZW50ZWQgaW4gdGhlIGNvbnRyYWN0LCBpdHMgcmVzcGVjdGl2ZSBicmFuY2ggd2lsbCBiZSAiKk5PVF9JTVBMRU1FTlRFRCIgd2hpY2gganVzdCBjb250YWlucyAiZXJyIgp0eG4gQXBwbGljYXRpb25JRAohCmludCA2CioKdHhuIE9uQ29tcGxldGlvbgorCnN3aXRjaCAqY2FsbF9Ob09wICpOT1RfSU1QTEVNRU5URUQgKk5PVF9JTVBMRU1FTlRFRCAqTk9UX0lNUExFTUVOVEVEICpOT1RfSU1QTEVNRU5URUQgKk5PVF9JTVBMRU1FTlRFRCAqY3JlYXRlX05vT3AgKk5PVF9JTVBMRU1FTlRFRCAqTk9UX0lNUExFTUVOVEVEICpOT1RfSU1QTEVNRU5URUQgKk5PVF9JTVBMRU1FTlRFRCAqTk9UX0lNUExFTUVOVEVECgoqTk9UX0lNUExFTUVOVEVEOgoJZXJyCgovLyBjcmVhdGVBcHBsaWNhdGlvbihzdHJpbmcpdm9pZAoqYWJpX3JvdXRlX2NyZWF0ZUFwcGxpY2F0aW9uOgoJLy8gcHJvcG9zYWw6IHN0cmluZwoJdHhuYSBBcHBsaWNhdGlvbkFyZ3MgMQoJZXh0cmFjdCAyIDAKCgkvLyBleGVjdXRlIGNyZWF0ZUFwcGxpY2F0aW9uKHN0cmluZyl2b2lkCgljYWxsc3ViIGNyZWF0ZUFwcGxpY2F0aW9uCglpbnQgMQoJcmV0dXJuCgovLyBjcmVhdGVBcHBsaWNhdGlvbihwcm9wb3NhbDogc3RyaW5nKTogdm9pZApjcmVhdGVBcHBsaWNhdGlvbjoKCXByb3RvIDEgMAoKCS8vIGNvbnRyYWN0cy9BaWRXYXZlLmFsZ28udHM6MTMKCS8vIHRoaXMucHJvcG9zYWwudmFsdWUgPSBwcm9wb3NhbAoJYnl0ZSAweDcwNzI2ZjcwNmY3MzYxNmMgLy8gInByb3Bvc2FsIgoJZnJhbWVfZGlnIC0xIC8vIHByb3Bvc2FsOiBzdHJpbmcKCWR1cAoJbGVuCglpdG9iCglleHRyYWN0IDYgMgoJc3dhcAoJY29uY2F0CglhcHBfZ2xvYmFsX3B1dAoJcmV0c3ViCgovLyB2b3RlKGJvb2wpdm9pZAoqYWJpX3JvdXRlX3ZvdGU6CgkvLyBpbkZhdm9yOiBib29sCgl0eG5hIEFwcGxpY2F0aW9uQXJncyAxCglkdXAKCWxlbgoJaW50IDEKCT09Cglhc3NlcnQKCWludCAwCglnZXRiaXQKCgkvLyBleGVjdXRlIHZvdGUoYm9vbCl2b2lkCgljYWxsc3ViIHZvdGUKCWludCAxCglyZXR1cm4KCi8vIHZvdGUoaW5GYXZvcjogYm9vbGVhbik6IHZvaWQKdm90ZToKCXByb3RvIDEgMAoKCS8vIGNvbnRyYWN0cy9BaWRXYXZlLmFsZ28udHM6MTgKCS8vIHRoaXMudm90ZVRvdGFsLnZhbHVlID0gdGhpcy52b3RlVG90YWwudmFsdWUgKyAxCglieXRlIDB4NzY2Zjc0NjU1NDZmNzQ2MTZjIC8vICJ2b3RlVG90YWwiCglkdXAKCWFwcF9nbG9iYWxfZ2V0CglpbnQgMQoJKwoJYXBwX2dsb2JhbF9wdXQKCgkvLyAqaWYwX2NvbmRpdGlvbgoJLy8gY29udHJhY3RzL0FpZFdhdmUuYWxnby50czoxOQoJLy8gaW5GYXZvcgoJZnJhbWVfZGlnIC0xIC8vIGluRmF2b3I6IGJvb2xlYW4KCWJ6ICppZjBfZW5kCgoJLy8gKmlmMF9jb25zZXF1ZW50CgkvLyBjb250cmFjdHMvQWlkV2F2ZS5hbGdvLnRzOjIwCgkvLyB0aGlzLnZvdGVzSW5GYXZvci52YWx1ZSA9IHRoaXMudm90ZXNJbkZhdm9yLnZhbHVlICsgMQoJYnl0ZSAweDc2NmY3NDY1NzM0OTZlNDY2MTc2NmY3MiAvLyAidm90ZXNJbkZhdm9yIgoJZHVwCglhcHBfZ2xvYmFsX2dldAoJaW50IDEKCSsKCWFwcF9nbG9iYWxfcHV0CgoqaWYwX2VuZDoKCXJldHN1YgoKLy8gZ2V0UHJvcG9zYWwoKXN0cmluZwoqYWJpX3JvdXRlX2dldFByb3Bvc2FsOgoJLy8gVGhlIEFCSSByZXR1cm4gcHJlZml4CglieXRlIDB4MTUxZjdjNzUKCgkvLyBleGVjdXRlIGdldFByb3Bvc2FsKClzdHJpbmcKCWNhbGxzdWIgZ2V0UHJvcG9zYWwKCWR1cAoJbGVuCglpdG9iCglleHRyYWN0IDYgMgoJc3dhcAoJY29uY2F0Cgljb25jYXQKCWxvZwoJaW50IDEKCXJldHVybgoKLy8gZ2V0UHJvcG9zYWwoKTogc3RyaW5nCmdldFByb3Bvc2FsOgoJcHJvdG8gMCAxCgoJLy8gY29udHJhY3RzL0FpZFdhdmUuYWxnby50czoyNgoJLy8gcmV0dXJuIHRoaXMucHJvcG9zYWwudmFsdWU7CglieXRlIDB4NzA3MjZmNzA2ZjczNjE2YyAvLyAicHJvcG9zYWwiCglhcHBfZ2xvYmFsX2dldAoJZXh0cmFjdCAyIDAKCXJldHN1YgoKLy8gZ2V0Vm90ZXMoKSh1aW50NjQsdWludDY0KQoqYWJpX3JvdXRlX2dldFZvdGVzOgoJLy8gVGhlIEFCSSByZXR1cm4gcHJlZml4CglieXRlIDB4MTUxZjdjNzUKCgkvLyBleGVjdXRlIGdldFZvdGVzKCkodWludDY0LHVpbnQ2NCkKCWNhbGxzdWIgZ2V0Vm90ZXMKCWNvbmNhdAoJbG9nCglpbnQgMQoJcmV0dXJuCgovLyBnZXRWb3RlcygpOiBbdWludDY0LCB1aW50NjRdCmdldFZvdGVzOgoJcHJvdG8gMCAxCgoJLy8gY29udHJhY3RzL0FpZFdhdmUuYWxnby50czozMQoJLy8gcmV0dXJuIFt0aGlzLnZvdGVzSW5GYXZvci52YWx1ZSwgdGhpcy52b3RlVG90YWwudmFsdWVdOwoJYnl0ZSAweDc2NmY3NDY1NzM0OTZlNDY2MTc2NmY3MiAvLyAidm90ZXNJbkZhdm9yIgoJYXBwX2dsb2JhbF9nZXQKCWl0b2IKCWJ5dGUgMHg3NjZmNzQ2NTU0NmY3NDYxNmMgLy8gInZvdGVUb3RhbCIKCWFwcF9nbG9iYWxfZ2V0CglpdG9iCgljb25jYXQKCXJldHN1YgoKKmNyZWF0ZV9Ob09wOgoJbWV0aG9kICJjcmVhdGVBcHBsaWNhdGlvbihzdHJpbmcpdm9pZCIKCXR4bmEgQXBwbGljYXRpb25BcmdzIDAKCW1hdGNoICphYmlfcm91dGVfY3JlYXRlQXBwbGljYXRpb24KCWVycgoKKmNhbGxfTm9PcDoKCW1ldGhvZCAidm90ZShib29sKXZvaWQiCgltZXRob2QgImdldFByb3Bvc2FsKClzdHJpbmciCgltZXRob2QgImdldFZvdGVzKCkodWludDY0LHVpbnQ2NCkiCgl0eG5hIEFwcGxpY2F0aW9uQXJncyAwCgltYXRjaCAqYWJpX3JvdXRlX3ZvdGUgKmFiaV9yb3V0ZV9nZXRQcm9wb3NhbCAqYWJpX3JvdXRlX2dldFZvdGVzCgllcnI=",
+    "approval": "I3ByYWdtYSB2ZXJzaW9uIDEwCgovLyBUaGlzIFRFQUwgd2FzIGdlbmVyYXRlZCBieSBURUFMU2NyaXB0IHYwLjkwLjIKLy8gaHR0cHM6Ly9naXRodWIuY29tL2FsZ29yYW5kZm91bmRhdGlvbi9URUFMU2NyaXB0CgovLyBUaGlzIGNvbnRyYWN0IGlzIGNvbXBsaWFudCB3aXRoIGFuZC9vciBpbXBsZW1lbnRzIHRoZSBmb2xsb3dpbmcgQVJDczogWyBBUkM0IF0KCi8vIFRoZSBmb2xsb3dpbmcgdGVuIGxpbmVzIG9mIFRFQUwgaGFuZGxlIGluaXRpYWwgcHJvZ3JhbSBmbG93Ci8vIFRoaXMgcGF0dGVybiBpcyB1c2VkIHRvIG1ha2UgaXQgZWFzeSBmb3IgYW55b25lIHRvIHBhcnNlIHRoZSBzdGFydCBvZiB0aGUgcHJvZ3JhbSBhbmQgZGV0ZXJtaW5lIGlmIGEgc3BlY2lmaWMgYWN0aW9uIGlzIGFsbG93ZWQKLy8gSGVyZSwgYWN0aW9uIHJlZmVycyB0byB0aGUgT25Db21wbGV0ZSBpbiBjb21iaW5hdGlvbiB3aXRoIHdoZXRoZXIgdGhlIGFwcCBpcyBiZWluZyBjcmVhdGVkIG9yIGNhbGxlZAovLyBFdmVyeSBwb3NzaWJsZSBhY3Rpb24gZm9yIHRoaXMgY29udHJhY3QgaXMgcmVwcmVzZW50ZWQgaW4gdGhlIHN3aXRjaCBzdGF0ZW1lbnQKLy8gSWYgdGhlIGFjdGlvbiBpcyBub3QgaW1wbGVtZW50ZWQgaW4gdGhlIGNvbnRyYWN0LCBpdHMgcmVzcGVjdGl2ZSBicmFuY2ggd2lsbCBiZSAiKk5PVF9JTVBMRU1FTlRFRCIgd2hpY2gganVzdCBjb250YWlucyAiZXJyIgp0eG4gQXBwbGljYXRpb25JRAohCmludCA2CioKdHhuIE9uQ29tcGxldGlvbgorCnN3aXRjaCAqY2FsbF9Ob09wICpOT1RfSU1QTEVNRU5URUQgKk5PVF9JTVBMRU1FTlRFRCAqTk9UX0lNUExFTUVOVEVEICpOT1RfSU1QTEVNRU5URUQgKk5PVF9JTVBMRU1FTlRFRCAqY3JlYXRlX05vT3AgKk5PVF9JTVBMRU1FTlRFRCAqTk9UX0lNUExFTUVOVEVEICpOT1RfSU1QTEVNRU5URUQgKk5PVF9JTVBMRU1FTlRFRCAqTk9UX0lNUExFTUVOVEVECgoqTk9UX0lNUExFTUVOVEVEOgoJZXJyCgovLyBjcmVhdGVBcHBsaWNhdGlvbihzdHJpbmcpdm9pZAoqYWJpX3JvdXRlX2NyZWF0ZUFwcGxpY2F0aW9uOgoJLy8gcHJvcG9zYWw6IHN0cmluZwoJdHhuYSBBcHBsaWNhdGlvbkFyZ3MgMQoJZXh0cmFjdCAyIDAKCgkvLyBleGVjdXRlIGNyZWF0ZUFwcGxpY2F0aW9uKHN0cmluZyl2b2lkCgljYWxsc3ViIGNyZWF0ZUFwcGxpY2F0aW9uCglpbnQgMQoJcmV0dXJuCgovLyBjcmVhdGVBcHBsaWNhdGlvbihwcm9wb3NhbDogc3RyaW5nKTogdm9pZApjcmVhdGVBcHBsaWNhdGlvbjoKCXByb3RvIDEgMAoKCS8vIGNvbnRyYWN0cy9BaWRXYXZlLmFsZ28udHM6MTUKCS8vIHRoaXMucHJvcG9zYWwudmFsdWUgPSBwcm9wb3NhbAoJYnl0ZSAweDcwNzI2ZjcwNmY3MzYxNmMgLy8gInByb3Bvc2FsIgoJZnJhbWVfZGlnIC0xIC8vIHByb3Bvc2FsOiBzdHJpbmcKCWR1cAoJbGVuCglpdG9iCglleHRyYWN0IDYgMgoJc3dhcAoJY29uY2F0CglhcHBfZ2xvYmFsX3B1dAoJcmV0c3ViCgovLyBib290c3RyYXAoKXVpbnQ2NAoqYWJpX3JvdXRlX2Jvb3RzdHJhcDoKCS8vIFRoZSBBQkkgcmV0dXJuIHByZWZpeAoJYnl0ZSAweDE1MWY3Yzc1CgoJLy8gZXhlY3V0ZSBib290c3RyYXAoKXVpbnQ2NAoJY2FsbHN1YiBib290c3RyYXAKCWl0b2IKCWNvbmNhdAoJbG9nCglpbnQgMQoJcmV0dXJuCgovLyBib290c3RyYXAoKTogQXNzZXRJRApib290c3RyYXA6Cglwcm90byAwIDEKCgkvLyBQdXNoIGVtcHR5IGJ5dGVzIGFmdGVyIHRoZSBmcmFtZSBwb2ludGVyIHRvIHJlc2VydmUgc3BhY2UgZm9yIGxvY2FsIHZhcmlhYmxlcwoJYnl0ZSAweAoKCS8vIGNvbnRyYWN0cy9BaWRXYXZlLmFsZ28udHM6MjAKCS8vIHZlcmlmeVR4bih0aGlzLnR4biwgeyBzZW5kZXI6IHRoaXMuYXBwLmNyZWF0b3IgfSkKCS8vIHZlcmlmeSBzZW5kZXIKCXR4biBTZW5kZXIKCXR4bmEgQXBwbGljYXRpb25zIDAKCWFwcF9wYXJhbXNfZ2V0IEFwcENyZWF0b3IKCXBvcAoJPT0KCWFzc2VydAoKCS8vIGNvbnRyYWN0cy9BaWRXYXZlLmFsZ28udHM6MjEKCS8vIGFzc2VydCghdGhpcy5yZWdpc3RlcmVkQXNhLmV4aXN0cykKCXR4bmEgQXBwbGljYXRpb25zIDAKCWJ5dGUgMHg3MjY1Njc2OTczNzQ2NTcyNjU2NDQxNzM2MSAvLyAicmVnaXN0ZXJlZEFzYSIKCWFwcF9nbG9iYWxfZ2V0X2V4Cglzd2FwCglwb3AKCSEKCWFzc2VydAoKCS8vIGNvbnRyYWN0cy9BaWRXYXZlLmFsZ28udHM6MjIKCS8vIHJlZ2lzdGVyZWRBc2EgPSBzZW5kQXNzZXRDcmVhdGlvbih7CgkvLyAgICAgICBjb25maWdBc3NldFRvdGFsOiAxXzAwMCwKCS8vICAgICAgIGNvbmZpZ0Fzc2V0RnJlZXplOiB0aGlzLmFwcC5hZGRyZXNzLAoJLy8gICAgIH0pCglpdHhuX2JlZ2luCglpbnQgYWNmZwoJaXR4bl9maWVsZCBUeXBlRW51bQoKCS8vIGNvbnRyYWN0cy9BaWRXYXZlLmFsZ28udHM6MjMKCS8vIGNvbmZpZ0Fzc2V0VG90YWw6IDFfMDAwCglpbnQgMV8wMDAKCWl0eG5fZmllbGQgQ29uZmlnQXNzZXRUb3RhbAoKCS8vIGNvbnRyYWN0cy9BaWRXYXZlLmFsZ28udHM6MjQKCS8vIGNvbmZpZ0Fzc2V0RnJlZXplOiB0aGlzLmFwcC5hZGRyZXNzCglnbG9iYWwgQ3VycmVudEFwcGxpY2F0aW9uQWRkcmVzcwoJaXR4bl9maWVsZCBDb25maWdBc3NldEZyZWV6ZQoKCS8vIEZlZSBmaWVsZCBub3Qgc2V0LCBkZWZhdWx0aW5nIHRvIDAKCWludCAwCglpdHhuX2ZpZWxkIEZlZQoKCS8vIFN1Ym1pdCBpbm5lciB0cmFuc2FjdGlvbgoJaXR4bl9zdWJtaXQKCWl0eG4gQ3JlYXRlZEFzc2V0SUQKCWZyYW1lX2J1cnkgMCAvLyByZWdpc3RlcmVkQXNhOiB1aW50NjQKCgkvLyBjb250cmFjdHMvQWlkV2F2ZS5hbGdvLnRzOjI3CgkvLyB0aGlzLnJlZ2lzdGVyZWRBc2EudmFsdWUgPSByZWdpc3RlcmVkQXNhCglieXRlIDB4NzI2NTY3Njk3Mzc0NjU3MjY1NjQ0MTczNjEgLy8gInJlZ2lzdGVyZWRBc2EiCglmcmFtZV9kaWcgMCAvLyByZWdpc3RlcmVkQXNhOiB1aW50NjQKCWFwcF9nbG9iYWxfcHV0CgoJLy8gY29udHJhY3RzL0FpZFdhdmUuYWxnby50czoyOQoJLy8gcmV0dXJuIHJlZ2lzdGVyZWRBc2E7CglmcmFtZV9kaWcgMCAvLyByZWdpc3RlcmVkQXNhOiB1aW50NjQKCgkvLyBzZXQgdGhlIHN1YnJvdXRpbmUgcmV0dXJuIHZhbHVlCglmcmFtZV9idXJ5IDAKCXJldHN1YgoKLy8gdm90ZShib29sKXZvaWQKKmFiaV9yb3V0ZV92b3RlOgoJLy8gaW5GYXZvcjogYm9vbAoJdHhuYSBBcHBsaWNhdGlvbkFyZ3MgMQoJZHVwCglsZW4KCWludCAxCgk9PQoJYXNzZXJ0CglpbnQgMAoJZ2V0Yml0CgoJLy8gZXhlY3V0ZSB2b3RlKGJvb2wpdm9pZAoJY2FsbHN1YiB2b3RlCglpbnQgMQoJcmV0dXJuCgovLyB2b3RlKGluRmF2b3I6IGJvb2xlYW4pOiB2b2lkCnZvdGU6Cglwcm90byAxIDAKCgkvLyBjb250cmFjdHMvQWlkV2F2ZS5hbGdvLnRzOjM0CgkvLyB0aGlzLnZvdGVUb3RhbC52YWx1ZSA9IHRoaXMudm90ZVRvdGFsLnZhbHVlICsgMQoJYnl0ZSAweDc2NmY3NDY1NTQ2Zjc0NjE2YyAvLyAidm90ZVRvdGFsIgoJZHVwCglhcHBfZ2xvYmFsX2dldAoJaW50IDEKCSsKCWFwcF9nbG9iYWxfcHV0CgoJLy8gKmlmMF9jb25kaXRpb24KCS8vIGNvbnRyYWN0cy9BaWRXYXZlLmFsZ28udHM6MzUKCS8vIGluRmF2b3IKCWZyYW1lX2RpZyAtMSAvLyBpbkZhdm9yOiBib29sZWFuCglieiAqaWYwX2VuZAoKCS8vICppZjBfY29uc2VxdWVudAoJLy8gY29udHJhY3RzL0FpZFdhdmUuYWxnby50czozNgoJLy8gdGhpcy52b3Rlc0luRmF2b3IudmFsdWUgPSB0aGlzLnZvdGVzSW5GYXZvci52YWx1ZSArIDEKCWJ5dGUgMHg3NjZmNzQ2NTczNDk2ZTQ2NjE3NjZmNzIgLy8gInZvdGVzSW5GYXZvciIKCWR1cAoJYXBwX2dsb2JhbF9nZXQKCWludCAxCgkrCglhcHBfZ2xvYmFsX3B1dAoKKmlmMF9lbmQ6CglyZXRzdWIKCi8vIGdldFByb3Bvc2FsKClzdHJpbmcKKmFiaV9yb3V0ZV9nZXRQcm9wb3NhbDoKCS8vIFRoZSBBQkkgcmV0dXJuIHByZWZpeAoJYnl0ZSAweDE1MWY3Yzc1CgoJLy8gZXhlY3V0ZSBnZXRQcm9wb3NhbCgpc3RyaW5nCgljYWxsc3ViIGdldFByb3Bvc2FsCglkdXAKCWxlbgoJaXRvYgoJZXh0cmFjdCA2IDIKCXN3YXAKCWNvbmNhdAoJY29uY2F0Cglsb2cKCWludCAxCglyZXR1cm4KCi8vIGdldFByb3Bvc2FsKCk6IHN0cmluZwpnZXRQcm9wb3NhbDoKCXByb3RvIDAgMQoKCS8vIGNvbnRyYWN0cy9BaWRXYXZlLmFsZ28udHM6NDIKCS8vIHJldHVybiB0aGlzLnByb3Bvc2FsLnZhbHVlOwoJYnl0ZSAweDcwNzI2ZjcwNmY3MzYxNmMgLy8gInByb3Bvc2FsIgoJYXBwX2dsb2JhbF9nZXQKCWV4dHJhY3QgMiAwCglyZXRzdWIKCi8vIGdldFZvdGVzKCkodWludDY0LHVpbnQ2NCkKKmFiaV9yb3V0ZV9nZXRWb3RlczoKCS8vIFRoZSBBQkkgcmV0dXJuIHByZWZpeAoJYnl0ZSAweDE1MWY3Yzc1CgoJLy8gZXhlY3V0ZSBnZXRWb3RlcygpKHVpbnQ2NCx1aW50NjQpCgljYWxsc3ViIGdldFZvdGVzCgljb25jYXQKCWxvZwoJaW50IDEKCXJldHVybgoKLy8gZ2V0Vm90ZXMoKTogW3VpbnQ2NCwgdWludDY0XQpnZXRWb3RlczoKCXByb3RvIDAgMQoKCS8vIGNvbnRyYWN0cy9BaWRXYXZlLmFsZ28udHM6NDcKCS8vIHJldHVybiBbdGhpcy52b3Rlc0luRmF2b3IudmFsdWUsIHRoaXMudm90ZVRvdGFsLnZhbHVlXTsKCWJ5dGUgMHg3NjZmNzQ2NTczNDk2ZTQ2NjE3NjZmNzIgLy8gInZvdGVzSW5GYXZvciIKCWFwcF9nbG9iYWxfZ2V0CglpdG9iCglieXRlIDB4NzY2Zjc0NjU1NDZmNzQ2MTZjIC8vICJ2b3RlVG90YWwiCglhcHBfZ2xvYmFsX2dldAoJaXRvYgoJY29uY2F0CglyZXRzdWIKCi8vIGdldFJlZ2lzZXJlZEFzYSgpdWludDY0CiphYmlfcm91dGVfZ2V0UmVnaXNlcmVkQXNhOgoJLy8gVGhlIEFCSSByZXR1cm4gcHJlZml4CglieXRlIDB4MTUxZjdjNzUKCgkvLyBleGVjdXRlIGdldFJlZ2lzZXJlZEFzYSgpdWludDY0CgljYWxsc3ViIGdldFJlZ2lzZXJlZEFzYQoJaXRvYgoJY29uY2F0Cglsb2cKCWludCAxCglyZXR1cm4KCi8vIGdldFJlZ2lzZXJlZEFzYSgpOiBBc3NldElECmdldFJlZ2lzZXJlZEFzYToKCXByb3RvIDAgMQoKCS8vIGNvbnRyYWN0cy9BaWRXYXZlLmFsZ28udHM6NTEKCS8vIHJldHVybiB0aGlzLnJlZ2lzdGVyZWRBc2EudmFsdWU7CglieXRlIDB4NzI2NTY3Njk3Mzc0NjU3MjY1NjQ0MTczNjEgLy8gInJlZ2lzdGVyZWRBc2EiCglhcHBfZ2xvYmFsX2dldAoJcmV0c3ViCgoqY3JlYXRlX05vT3A6CgltZXRob2QgImNyZWF0ZUFwcGxpY2F0aW9uKHN0cmluZyl2b2lkIgoJdHhuYSBBcHBsaWNhdGlvbkFyZ3MgMAoJbWF0Y2ggKmFiaV9yb3V0ZV9jcmVhdGVBcHBsaWNhdGlvbgoJZXJyCgoqY2FsbF9Ob09wOgoJbWV0aG9kICJib290c3RyYXAoKXVpbnQ2NCIKCW1ldGhvZCAidm90ZShib29sKXZvaWQiCgltZXRob2QgImdldFByb3Bvc2FsKClzdHJpbmciCgltZXRob2QgImdldFZvdGVzKCkodWludDY0LHVpbnQ2NCkiCgltZXRob2QgImdldFJlZ2lzZXJlZEFzYSgpdWludDY0IgoJdHhuYSBBcHBsaWNhdGlvbkFyZ3MgMAoJbWF0Y2ggKmFiaV9yb3V0ZV9ib290c3RyYXAgKmFiaV9yb3V0ZV92b3RlICphYmlfcm91dGVfZ2V0UHJvcG9zYWwgKmFiaV9yb3V0ZV9nZXRWb3RlcyAqYWJpX3JvdXRlX2dldFJlZ2lzZXJlZEFzYQoJZXJy",
     "clear": "I3ByYWdtYSB2ZXJzaW9uIDEw"
   },
   "contract": {
@@ -108,6 +122,13 @@ export const APP_SPEC: AppSpec = {
         ],
         "returns": {
           "type": "void"
+        }
+      },
+      {
+        "name": "bootstrap",
+        "args": [],
+        "returns": {
+          "type": "uint64"
         }
       },
       {
@@ -134,6 +155,13 @@ export const APP_SPEC: AppSpec = {
         "args": [],
         "returns": {
           "type": "(uint64,uint64)"
+        }
+      },
+      {
+        "name": "getRegiseredAsa",
+        "args": [],
+        "returns": {
+          "type": "uint64"
         }
       }
     ]
@@ -210,6 +238,12 @@ export type AidWave = {
       argsTuple: [proposal: string]
       returns: void
     }>
+    & Record<'bootstrap()uint64' | 'bootstrap', {
+      argsObj: {
+      }
+      argsTuple: []
+      returns: bigint
+    }>
     & Record<'vote(bool)void' | 'vote', {
       argsObj: {
         inFavor: boolean
@@ -229,11 +263,18 @@ export type AidWave = {
       argsTuple: []
       returns: [bigint, bigint]
     }>
+    & Record<'getRegiseredAsa()uint64' | 'getRegiseredAsa', {
+      argsObj: {
+      }
+      argsTuple: []
+      returns: bigint
+    }>
   /**
    * Defines the shape of the global and local state of the application.
    */
   state: {
     global: {
+      'registeredAsa'?: IntegerState
       'proposal'?: BinaryState
       'voteTotal'?: IntegerState
       'votesInFavor'?: IntegerState
@@ -312,6 +353,20 @@ export abstract class AidWaveCallFactory {
   }
 
   /**
+   * Constructs a no op call for the bootstrap()uint64 ABI method
+   *
+   * @param args Any args for the contract call
+   * @param params Any additional parameters for the call
+   * @returns A TypedCallParams object for the call
+   */
+  static bootstrap(args: MethodArgs<'bootstrap()uint64'>, params: AppClientCallCoreParams & CoreAppCallArgs) {
+    return {
+      method: 'bootstrap()uint64' as const,
+      methodArgs: Array.isArray(args) ? args : [],
+      ...params,
+    }
+  }
+  /**
    * Constructs a no op call for the vote(bool)void ABI method
    *
    * @param args Any args for the contract call
@@ -349,6 +404,20 @@ export abstract class AidWaveCallFactory {
   static getVotes(args: MethodArgs<'getVotes()(uint64,uint64)'>, params: AppClientCallCoreParams & CoreAppCallArgs) {
     return {
       method: 'getVotes()(uint64,uint64)' as const,
+      methodArgs: Array.isArray(args) ? args : [],
+      ...params,
+    }
+  }
+  /**
+   * Constructs a no op call for the getRegiseredAsa()uint64 ABI method
+   *
+   * @param args Any args for the contract call
+   * @param params Any additional parameters for the call
+   * @returns A TypedCallParams object for the call
+   */
+  static getRegiseredAsa(args: MethodArgs<'getRegiseredAsa()uint64'>, params: AppClientCallCoreParams & CoreAppCallArgs) {
+    return {
+      method: 'getRegiseredAsa()uint64' as const,
       methodArgs: Array.isArray(args) ? args : [],
       ...params,
     }
@@ -453,6 +522,17 @@ export class AidWaveClient {
   }
 
   /**
+   * Calls the bootstrap()uint64 ABI method.
+   *
+   * @param args The arguments for the contract call
+   * @param params Any additional parameters for the call
+   * @returns The result of the call
+   */
+  public bootstrap(args: MethodArgs<'bootstrap()uint64'>, params: AppClientCallCoreParams & CoreAppCallArgs = {}) {
+    return this.call(AidWaveCallFactory.bootstrap(args, params))
+  }
+
+  /**
    * Calls the vote(bool)void ABI method.
    *
    * @param args The arguments for the contract call
@@ -483,6 +563,17 @@ export class AidWaveClient {
    */
   public getVotes(args: MethodArgs<'getVotes()(uint64,uint64)'>, params: AppClientCallCoreParams & CoreAppCallArgs = {}) {
     return this.call(AidWaveCallFactory.getVotes(args, params))
+  }
+
+  /**
+   * Calls the getRegiseredAsa()uint64 ABI method.
+   *
+   * @param args The arguments for the contract call
+   * @param params Any additional parameters for the call
+   * @returns The result of the call
+   */
+  public getRegiseredAsa(args: MethodArgs<'getRegiseredAsa()uint64'>, params: AppClientCallCoreParams & CoreAppCallArgs = {}) {
+    return this.call(AidWaveCallFactory.getRegiseredAsa(args, params))
   }
 
   /**
@@ -535,6 +626,9 @@ export class AidWaveClient {
   public async getGlobalState(): Promise<AidWave['state']['global']> {
     const state = await this.appClient.getGlobalState()
     return {
+      get registeredAsa() {
+        return AidWaveClient.getIntegerState(state, 'registeredAsa')
+      },
       get proposal() {
         return AidWaveClient.getBinaryState(state, 'proposal')
       },
@@ -553,6 +647,11 @@ export class AidWaveClient {
     let promiseChain:Promise<unknown> = Promise.resolve()
     const resultMappers: Array<undefined | ((x: any) => any)> = []
     return {
+      bootstrap(args: MethodArgs<'bootstrap()uint64'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
+        promiseChain = promiseChain.then(() => client.bootstrap(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
+        resultMappers.push(undefined)
+        return this
+      },
       vote(args: MethodArgs<'vote(bool)void'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.vote(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
@@ -565,6 +664,11 @@ export class AidWaveClient {
       },
       getVotes(args: MethodArgs<'getVotes()(uint64,uint64)'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.getVotes(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
+        resultMappers.push(undefined)
+        return this
+      },
+      getRegiseredAsa(args: MethodArgs<'getRegiseredAsa()uint64'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs) {
+        promiseChain = promiseChain.then(() => client.getRegiseredAsa(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
@@ -602,6 +706,15 @@ export class AidWaveClient {
 }
 export type AidWaveComposer<TReturns extends [...any[]] = []> = {
   /**
+   * Calls the bootstrap()uint64 ABI method.
+   *
+   * @param args The arguments for the contract call
+   * @param params Any additional parameters for the call
+   * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
+   */
+  bootstrap(args: MethodArgs<'bootstrap()uint64'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AidWaveComposer<[...TReturns, MethodReturn<'bootstrap()uint64'>]>
+
+  /**
    * Calls the vote(bool)void ABI method.
    *
    * @param args The arguments for the contract call
@@ -627,6 +740,15 @@ export type AidWaveComposer<TReturns extends [...any[]] = []> = {
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
   getVotes(args: MethodArgs<'getVotes()(uint64,uint64)'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AidWaveComposer<[...TReturns, MethodReturn<'getVotes()(uint64,uint64)'>]>
+
+  /**
+   * Calls the getRegiseredAsa()uint64 ABI method.
+   *
+   * @param args The arguments for the contract call
+   * @param params Any additional parameters for the call
+   * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
+   */
+  getRegiseredAsa(args: MethodArgs<'getRegiseredAsa()uint64'>, params?: AppClientComposeCallCoreParams & CoreAppCallArgs): AidWaveComposer<[...TReturns, MethodReturn<'getRegiseredAsa()uint64'>]>
 
   /**
    * Makes a clear_state call to an existing instance of the AidWave smart contract.

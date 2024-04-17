@@ -2,6 +2,8 @@ import { Contract } from '@algorandfoundation/tealscript';
 
 // eslint-disable-next-line no-unused-vars
 class AidWave extends Contract {
+  registeredAsa = GlobalStateKey<AssetID>();
+
   proposal = GlobalStateKey<string>();
 
   voteTotal = GlobalStateKey<uint64>();
@@ -11,6 +13,20 @@ class AidWave extends Contract {
   // define a proposal
   createApplication(proposal: string): void {
     this.proposal.value = proposal;
+  }
+
+  // mint DAO tokens
+  bootstrap(): AssetID {
+    verifyTxn(this.txn, { sender: this.app.creator });
+    assert(!this.registeredAsa.exists);
+    const registeredAsa = sendAssetCreation({
+      configAssetTotal: 1_000,
+      configAssetFreeze: this.app.address,
+    });
+
+    this.registeredAsa.value = registeredAsa;
+
+    return registeredAsa;
   }
 
   // change this method to allow users to be in favor of the proposal
@@ -29,5 +45,9 @@ class AidWave extends Contract {
   // change this method to allow users to see how many 'in favor of' votes the proposal has
   getVotes(): [uint64, uint64] {
     return [this.votesInFavor.value, this.voteTotal.value];
+  }
+
+  getRegiseredAsa(): AssetID {
+    return this.registeredAsa.value;
   }
 }
