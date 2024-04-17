@@ -44,7 +44,7 @@ class AidWave extends Contract {
     });
   }
 
-  // change this method to allow users to be in favor of the proposal
+  // allow users to be in favor of the proposal
   // eslint-disable-next-line no-unused-vars
   vote(inFavor: boolean, registeredASA: AssetID): void {
     assert(this.txn.sender.assetBalance(this.registeredAsaId.value) === 1);
@@ -63,7 +63,7 @@ class AidWave extends Contract {
     return this.registeredAsaId.value;
   }
 
-  // change this method to allow users to see how many 'in favor of' votes the proposal has
+  // allow users to see how many 'in favor of' votes the proposal has
   getVotes(): [uint64, uint64] {
     return [this.votesInFavor.value, this.voteTotal.value];
   }
