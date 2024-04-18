@@ -59,7 +59,7 @@ class AidWave extends Contract {
     return this.proposal.value;
   }
 
-  getRegiseredAsa(): AssetID {
+  getRegiseredASA(): AssetID {
     return this.registeredAsaId.value;
   }
 
