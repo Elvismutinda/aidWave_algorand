@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DeflyWalletConnect } from "@blockshake/defly-connect";
 import { DaffiWalletConnect } from "@daffiwallet/connect";
 import { PeraWalletConnect } from "@perawallet/connect";
@@ -10,7 +10,7 @@ import { AidWaveClient } from "./contracts/AidWave";
 import * as algokit from "@algorandfoundation/algokit-utils";
 import { useWallet } from "@txnlab/use-wallet";
 import ConnectWallet from "./components/ConnectWallet";
-import AidWaveCreateApplication from "./components/AidWaveCreateApplication";
+import Proposal from "./components/Proposal";
 
 let providersArray: ProvidersArray;
 if (import.meta.env.VITE_ALGOD_NETWORK === "") {
@@ -41,6 +41,29 @@ if (import.meta.env.VITE_ALGOD_NETWORK === "") {
 export default function App() {
   const [openWalletModal, setOpenWalletModal] = useState<boolean>(false);
   const [appID, setAppID] = useState<number>(0);
+  const [proposal, setProposal] = useState<string>("");
+
+  const setState = async () => {
+    try {
+      const state = await typedClient.getGlobalState();
+
+      setProposal(state.proposal!.asString());
+    } catch (error) {
+      console.warn(error)
+      setProposal("Invalid App ID, please set a valid App ID or create a new application");
+    }
+  };
+
+  // Everytime the App ID changes, we update the proposal
+  useEffect(() => {
+    if (appID === 0) {
+      setProposal("The app ID must be set manually or via the create application button before loading the proposal");
+      return;
+    }
+
+    setState();
+  }, [appID]);
+
   const { activeAddress } = useWallet();
 
   const toggleWalletModal = () => {
@@ -90,7 +113,7 @@ export default function App() {
                 </button>
                 <div className="divider" />
 
-                <h1 className="font-bold m-2">AidWave App ID</h1>
+                <h1 className="font-bold m-2">Proposal App ID</h1>
 
                 <input
                   type="number"
@@ -99,13 +122,17 @@ export default function App() {
                   onChange={(e) => setAppID(e.currentTarget.valueAsNumber || 0)}
                 />
 
+                <h1 className="font-bold m-2">Proposal</h1>
+
+                <textarea className="textarea textarea-bordered m-2" value={proposal} />
+
                 <div className="divider" />
 
                 {activeAddress && appID === 0 && (
-                  <AidWaveCreateApplication
+                  <Proposal
                     buttonClass="btn m-2"
                     buttonLoadingNode={<span className="loading loading-spinner" />}
-                    buttonNode="Create Application"
+                    buttonNode="Create Proposal"
                     typedClient={typedClient}
                     setAppID={setAppID}
                   />
