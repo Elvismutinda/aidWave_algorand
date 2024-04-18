@@ -57,7 +57,7 @@
       }
     },
     {
-      "name": "getRegiseredAsa",
+      "name": "getRegiseredASA",
       "args": [],
       "returns": {
         "type": "uint64"
