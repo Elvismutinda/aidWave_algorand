@@ -23,7 +23,7 @@ describe('AidWave', () => {
 
     sender = await algokit.getOrCreateKmdWalletAccount(
       {
-        name: 'daoSender',
+        name: 'AidWaveSender',
         fundWith: algokit.algos(10),
       },
       algod,
@@ -77,13 +77,13 @@ describe('AidWave', () => {
     registeredASA = bootstrapResult.return!.valueOf();
   });
 
-  test('vote (Negatve)', async () => {
-    await expect(appClient.vote({ inFavor: true, registeredASA })).rejects.toThrow();
-  });
-
   test('getRegisteredASA', async () => {
     const registeredAsaFromMethod = await appClient.getRegiseredAsa({});
     expect(registeredAsaFromMethod.return?.valueOf()).toBe(registeredASA);
+  });
+
+  test('vote (Negatve)', async () => {
+    await expect(appClient.vote({ inFavor: true, registeredASA }, { sender })).rejects.toThrow();
   });
 
   test('register', async () => {
