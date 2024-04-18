@@ -6,7 +6,7 @@ class AidWave extends Contract {
 
   proposal = GlobalStateKey<string>();
 
-  voteTotal = GlobalStateKey<uint64>();
+  votesTotal = GlobalStateKey<uint64>();
 
   votesInFavor = GlobalStateKey<uint64>();
 
@@ -48,7 +48,7 @@ class AidWave extends Contract {
   // eslint-disable-next-line no-unused-vars
   vote(inFavor: boolean, registeredASA: AssetID): void {
     assert(this.txn.sender.assetBalance(this.registeredAsaId.value) === 1);
-    this.voteTotal.value = this.voteTotal.value + 1;
+    this.votesTotal.value = this.votesTotal.value + 1;
     if (inFavor) {
       this.votesInFavor.value = this.votesInFavor.value + 1;
     }
@@ -65,6 +65,6 @@ class AidWave extends Contract {
 
   // allow users to see how many 'in favor of' votes the proposal has
   getVotes(): [uint64, uint64] {
-    return [this.votesInFavor.value, this.voteTotal.value];
+    return [this.votesInFavor.value, this.votesTotal.value];
   }
 }
