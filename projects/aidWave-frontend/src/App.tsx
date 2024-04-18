@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { DeflyWalletConnect } from "@blockshake/defly-connect";
 import { DaffiWalletConnect } from "@daffiwallet/connect";
 import { PeraWalletConnect } from "@perawallet/connect";
@@ -11,6 +11,8 @@ import * as algokit from "@algorandfoundation/algokit-utils";
 import { useWallet } from "@txnlab/use-wallet";
 import ConnectWallet from "./components/ConnectWallet";
 import Proposal from "./components/Proposal";
+import Register from "./components/Register";
+import Vote from "./components/Vote";
 
 let providersArray: ProvidersArray;
 if (import.meta.env.VITE_ALGOD_NETWORK === "") {
@@ -42,15 +44,39 @@ export default function App() {
   const [openWalletModal, setOpenWalletModal] = useState<boolean>(false);
   const [appID, setAppID] = useState<number>(0);
   const [proposal, setProposal] = useState<string>("");
+  const [registeredASA, setRegisteredASA] = useState<number>(0);
+  const [registered, setRegistered] = useState<boolean>(false);
+  const [votesTotal, setVotesTotal] = useState<number>(0);
+  const [votesInFavor, setVotesInFavor] = useState<number>(0);
+
+  const resetState = () => {
+    setRegisteredASA(0);
+    setRegistered(false);
+    setVotesTotal(0);
+    setVotesInFavor(0);
+  };
 
   const setState = async () => {
     try {
       const state = await typedClient.getGlobalState();
+      const asa = state.registeredAsaId?.asNumber() || 0;
 
       setProposal(state.proposal!.asString());
+      setRegisteredASA(asa);
+      setVotesTotal(state.votesTotal?.asNumber() || 0);
+      setVotesInFavor(state.votesInFavor?.asNumber() || 0);
+
+      try {
+        const assetInfo = await algodClient.accountAssetInformation(activeAddress!, asa).do();
+        setRegistered(assetInfo["asset-holding"].amount === 1);
+      } catch (error) {
+        console.warn(error);
+        setRegistered(false);
+      }
     } catch (error) {
-      console.warn(error)
+      console.warn(error);
       setProposal("Invalid App ID, please set a valid App ID or create a new application");
+      resetState();
     }
   };
 
@@ -58,6 +84,7 @@ export default function App() {
   useEffect(() => {
     if (appID === 0) {
       setProposal("The app ID must be set manually or via the create application button before loading the proposal");
+      resetState();
       return;
     }
 
@@ -113,7 +140,7 @@ export default function App() {
                 </button>
                 <div className="divider" />
 
-                <h1 className="font-bold m-2">Proposal App ID</h1>
+                <h1 className="font-bold m-2">Proposal ID</h1>
 
                 <input
                   type="number"
@@ -122,9 +149,13 @@ export default function App() {
                   onChange={(e) => setAppID(e.currentTarget.valueAsNumber || 0)}
                 />
 
-                <h1 className="font-bold m-2">Proposal</h1>
+                <h1 className="font-bold m-2">AidWave Proposal</h1>
 
                 <textarea className="textarea textarea-bordered m-2" value={proposal} />
+
+                <h1 className="font-bold m-2">Votes</h1>
+
+                <p>{votesInFavor} / {votesTotal}</p>
 
                 <div className="divider" />
 
@@ -136,6 +167,41 @@ export default function App() {
                     typedClient={typedClient}
                     setAppID={setAppID}
                   />
+                )}
+
+                {activeAddress && appID !== 0 && registeredASA !== 0 && !registered && (
+                  <Register
+                    buttonClass="btn m-2"
+                    buttonLoadingNode={<span className="loading loading-spinner" />}
+                    buttonNode="Call register"
+                    typedClient={typedClient}
+                    registeredASA={registeredASA}
+                    algodClient={algodClient}
+                    setState={setState}
+                  />
+                )}
+
+                {activeAddress && appID !== 0 && registeredASA !== 0 && registered && (
+                  <div>
+                    <Vote
+                      buttonClass="btn m-2"
+                      buttonLoadingNode={<span className="loading loading-spinner" />}
+                      buttonNode="Vote Against"
+                      typedClient={typedClient}
+                      inFavor={false}
+                      registeredASA={registeredASA}
+                      setState={setState}
+                    />
+                    <Vote
+                      buttonClass="btn m-2"
+                      buttonLoadingNode={<span className="loading loading-spinner" />}
+                      buttonNode="Vote in Favor"
+                      typedClient={typedClient}
+                      inFavor={true}
+                      registeredASA={registeredASA}
+                      setState={setState}
+                    />
+                  </div>
                 )}
               </div>
 
