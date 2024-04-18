@@ -261,8 +261,8 @@ vote:
 	assert
 
 	// contracts/AidWave.algo.ts:51
-	// this.voteTotal.value = this.voteTotal.value + 1
-	byte 0x766f7465546f74616c // "voteTotal"
+	// this.votesTotal.value = this.votesTotal.value + 1
+	byte 0x766f746573546f74616c // "votesTotal"
 	dup
 	app_global_get
 	int 1
@@ -357,11 +357,11 @@ getVotes:
 	proto 0 1
 
 	// contracts/AidWave.algo.ts:68
-	// return [this.votesInFavor.value, this.voteTotal.value];
+	// return [this.votesInFavor.value, this.votesTotal.value];
 	byte 0x766f746573496e4661766f72 // "votesInFavor"
 	app_global_get
 	itob
-	byte 0x766f7465546f74616c // "voteTotal"
+	byte 0x766f746573546f74616c // "votesTotal"
 	app_global_get
 	itob
 	concat
