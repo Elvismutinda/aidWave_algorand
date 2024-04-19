@@ -1,19 +1,23 @@
-import { Provider, useWallet } from '@txnlab/use-wallet'
-import Account from './Account'
+import { Provider, useWallet } from "@txnlab/use-wallet";
+import Account from "./Account";
 
 interface ConnectWalletInterface {
-  openModal: boolean
-  closeModal: () => void
+  openModal: boolean;
+  closeModal: () => void;
 }
 
 const ConnectWallet = ({ openModal, closeModal }: ConnectWalletInterface) => {
-  const { providers, activeAddress } = useWallet()
+  const { providers, activeAddress } = useWallet();
 
-  const isKmd = (provider: Provider) => provider.metadata.name.toLowerCase() === 'kmd'
+  const isKmd = (provider: Provider) => provider.metadata.name.toLowerCase() === "kmd";
 
   return (
-    <dialog id="connect_wallet_modal" className={`modal ${openModal ? 'modal-open' : ''}`}style={{ display: openModal ? 'block' : 'none' }}>
-      <form method="dialog" className="modal-box">
+    <dialog
+      id="connect_wallet_modal"
+      className={`modal ${openModal ? "modal-open" : ""}`}
+      style={{ display: openModal ? "flex" : "none", justifyContent: "center", alignItems: "center", zIndex: 90 }}
+    >
+      <form method="dialog" className="modal-box text-black">
         <h3 className="font-bold text-2xl">Select wallet provider</h3>
 
         <div className="grid m-2 pt-5">
@@ -31,27 +35,27 @@ const ConnectWallet = ({ openModal, closeModal }: ConnectWalletInterface) => {
                 className="btn border-teal-800 border-1  m-2"
                 key={`provider-${provider.metadata.id}`}
                 onClick={() => {
-                  return provider.connect()
+                  return provider.connect();
                 }}
               >
                 {!isKmd(provider) && (
                   <img
                     alt={`wallet_icon_${provider.metadata.id}`}
                     src={provider.metadata.icon}
-                    style={{ objectFit: 'contain', width: '30px', height: 'auto' }}
+                    style={{ objectFit: "contain", width: "30px", height: "auto" }}
                   />
                 )}
-                <span>{isKmd(provider) ? 'LocalNet Wallet' : provider.metadata.name}</span>
+                <span>{isKmd(provider) ? "LocalNet Wallet" : provider.metadata.name}</span>
               </button>
             ))}
         </div>
 
-        <div className="modal-action grid">
+        <div className="modal-action ">
           <button
             data-test-id="close-wallet-modal"
             className="btn"
             onClick={() => {
-              closeModal()
+              closeModal();
             }}
           >
             Close
@@ -62,15 +66,15 @@ const ConnectWallet = ({ openModal, closeModal }: ConnectWalletInterface) => {
               data-test-id="logout"
               onClick={() => {
                 if (providers) {
-                  const activeProvider = providers.find((p) => p.isActive)
+                  const activeProvider = providers.find((p) => p.isActive);
                   if (activeProvider) {
-                    activeProvider.disconnect()
+                    activeProvider.disconnect();
                   } else {
                     // Required for logout/cleanup of inactive providers
                     // For instance, when you login to localnet wallet and switch network
                     // to testnet/mainnet or vice verse.
-                    localStorage.removeItem('txnlab-use-wallet')
-                    window.location.reload()
+                    localStorage.removeItem("txnlab-use-wallet");
+                    window.location.reload();
                   }
                 }
               }}
@@ -81,6 +85,6 @@ const ConnectWallet = ({ openModal, closeModal }: ConnectWalletInterface) => {
         </div>
       </form>
     </dialog>
-  )
-}
-export default ConnectWallet
+  );
+};
+export default ConnectWallet;

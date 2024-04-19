@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { ReactNode, useState } from 'react'
-import { AidWave, AidWaveClient } from '../contracts/AidWave'
+import { AidWave, AidWaveClient } from '../contracts/AidWaveClient'
 import { useWallet } from '@txnlab/use-wallet'
 
 type VoteArgs = AidWave['methods']['vote(bool,uint64)void']['argsObj']
@@ -11,7 +11,7 @@ type Props = {
   buttonNode: ReactNode
   typedClient: AidWaveClient
   inFavor: VoteArgs['inFavor']
-  registeredASA: VoteArgs['registeredAsa']
+  registeredASA: VoteArgs['registeredASA']
   setState: () => Promise<void>
 }
 
@@ -26,7 +26,7 @@ const Vote = (props: Props) => {
     await props.typedClient.vote(
       {
         inFavor: props.inFavor,
-        registeredAsa: props.registeredASA,
+        registeredASA: props.registeredASA,
       },
       { sender },
     )

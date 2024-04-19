@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { ReactNode, useState } from "react";
-import { AidWave, AidWaveClient } from "../contracts/AidWave";
+import { AidWave, AidWaveClient } from "../contracts/AidWaveClient";
 import { useWallet } from "@txnlab/use-wallet";
 import algosdk from "algosdk";
 import * as algokit from "@algorandfoundation/algokit-utils";
@@ -12,7 +12,7 @@ type Props = {
   buttonLoadingNode?: ReactNode;
   buttonNode: ReactNode;
   typedClient: AidWaveClient;
-  registeredASA: RegisterArgs["registeredAsa"];
+  registeredASA: RegisterArgs["registeredASA"];
   algodClient: algosdk.Algodv2;
   setState: () => Promise<void>;
 };
@@ -25,6 +25,7 @@ const Register = (props: Props) => {
   const callMethod = async () => {
     setLoading(true);
     console.log(`Calling register`);
+    console.log(sender);
 
     const registeredAsaOptInTxn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
       from: sender.addr,
@@ -38,7 +39,7 @@ const Register = (props: Props) => {
 
     await props.typedClient.register(
       {
-        registeredAsa: props.registeredASA,
+        registeredASA: props.registeredASA,
       },
       { sender, sendParams: { fee: algokit.microAlgos(3_000) } }
     );

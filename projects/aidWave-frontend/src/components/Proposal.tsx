@@ -1,5 +1,5 @@
 import { ReactNode, useState } from "react";
-import { AidWave, AidWaveClient } from "../contracts/AidWave";
+import { AidWaveClient } from "../contracts/AidWaveClient";
 import { useWallet } from "@txnlab/use-wallet";
 import * as algokit from "@algorandfoundation/algokit-utils";
 
