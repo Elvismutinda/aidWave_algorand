@@ -317,21 +317,21 @@ getProposal:
 	extract 2 0
 	retsub
 
-// getRegiseredASA()uint64
-*abi_route_getRegiseredASA:
+// getRegisteredASA()uint64
+*abi_route_getRegisteredASA:
 	// The ABI return prefix
 	byte 0x151f7c75
 
-	// execute getRegiseredASA()uint64
-	callsub getRegiseredASA
+	// execute getRegisteredASA()uint64
+	callsub getRegisteredASA
 	itob
 	concat
 	log
 	int 1
 	return
 
-// getRegiseredASA(): AssetID
-getRegiseredASA:
+// getRegisteredASA(): AssetID
+getRegisteredASA:
 	proto 0 1
 
 	// contracts/AidWave.algo.ts:63
@@ -378,8 +378,8 @@ getVotes:
 	method "register(uint64)void"
 	method "vote(bool,uint64)void"
 	method "getProposal()string"
-	method "getRegiseredASA()uint64"
+	method "getRegisteredASA()uint64"
 	method "getVotes()(uint64,uint64)"
 	txna ApplicationArgs 0
-	match *abi_route_bootstrap *abi_route_register *abi_route_vote *abi_route_getProposal *abi_route_getRegiseredASA *abi_route_getVotes
+	match *abi_route_bootstrap *abi_route_register *abi_route_vote *abi_route_getProposal *abi_route_getRegisteredASA *abi_route_getVotes
 	err
