@@ -23,7 +23,7 @@ const Home = ({ setSelectedPage }: HomeProps) => {
   return (
     <section id="home" className="py-24 min-h-full ">
       <motion.div onViewportEnter={() => setSelectedPage(SelectedPage.Home)} className="mx-auto w-5/6 md:flex">
-        <div className="z-10 mt-32 md:basis-3/5">
+        <div className="z-0 mt-32 md:basis-3/5">
           <div className="md:-mt-20">
             <div className="relative">
               <div className="before:absolute before:-top-20 before:-left-20 before:z-[-1] md:before:content-evolvetext">

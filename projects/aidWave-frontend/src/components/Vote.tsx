@@ -28,7 +28,10 @@ const Vote = (props: Props) => {
         inFavor: props.inFavor,
         registeredASA: props.registeredASA,
       },
-      { sender },
+      {
+        sender,
+        assets: [Number(props.registeredASA)]
+       },
     )
     await props.setState()
     setLoading(false)

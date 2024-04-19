@@ -78,7 +78,7 @@ describe('AidWave', () => {
   });
 
   test('getRegisteredASA', async () => {
-    const registeredAsaFromMethod = await appClient.getRegiseredAsa({});
+    const registeredAsaFromMethod = await appClient.getRegisteredAsa({});
     expect(registeredAsaFromMethod.return?.valueOf()).toBe(registeredASA);
   });
 

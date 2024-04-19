@@ -108,7 +108,7 @@ const CreateProposal = ({ openModal, closeModal }: CreateProposalInterface) => {
           <h1 className="font-bold m-2 text-center">Votes</h1>
 
           <p className="text-center">
-            {votesInFavor} / {votesTotal}
+            Votes For : {votesInFavor} | Total Votes : {votesTotal}
           </p>
 
           <div className="divider" />
@@ -136,22 +136,22 @@ const CreateProposal = ({ openModal, closeModal }: CreateProposalInterface) => {
           )}
 
           {activeAddress && appID !== 0 && registeredASA !== 0 && registered && (
-            <div>
-              <Vote
-                buttonClass="btn btn-secondary m-2"
-                buttonLoadingNode={<span className="loading loading-spinner" />}
-                buttonNode="Vote Against"
-                typedClient={typedClient}
-                inFavor={false}
-                registeredASA={registeredASA}
-                setState={setState}
-              />
+            <div className="flex items-center justify-center">
               <Vote
                 buttonClass="btn btn-secondary m-2"
                 buttonLoadingNode={<span className="loading loading-spinner" />}
                 buttonNode="Vote in Favor"
                 typedClient={typedClient}
                 inFavor={true}
+                registeredASA={registeredASA}
+                setState={setState}
+              />
+              <Vote
+                buttonClass="btn btn-secondary m-2"
+                buttonLoadingNode={<span className="loading loading-spinner" />}
+                buttonNode="Vote Against"
+                typedClient={typedClient}
+                inFavor={false}
                 registeredASA={registeredASA}
                 setState={setState}
               />

@@ -39,8 +39,8 @@ const Proposal = (props: Props) => {
   };
 
   return (
-    <div>
-      <input type="text" className="input input-bordered m-2" onChange={(e) => setProposal(e.currentTarget.value)} />
+    <div className="flex items-center justify-center">
+      <input placeholder="Enter Humanitarian Aid Proposal" type="text" className="input input-bordered m-2" onChange={(e) => setProposal(e.currentTarget.value)} />
       <button className={props.buttonClass} onClick={callMethod}>
         {loading ? props.buttonLoadingNode || props.buttonNode : props.buttonNode}
       </button>

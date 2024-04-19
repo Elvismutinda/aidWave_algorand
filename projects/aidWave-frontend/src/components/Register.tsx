@@ -41,7 +41,10 @@ const Register = (props: Props) => {
       {
         registeredASA: props.registeredASA,
       },
-      { sender, sendParams: { fee: algokit.microAlgos(3_000) } }
+      { sender,
+        sendParams: { fee: algokit.microAlgos(3_000) },
+        assets: [Number(props.registeredASA)]
+      }
     );
 
     await props.setState();
